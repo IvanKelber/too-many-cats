@@ -8,21 +8,24 @@ public class CatAI : MonoBehaviour
     public float speed = 5.0f;
     public LayerMask targetLayerMask;
 
+    private Animator _animator;
     private bool inView = false;
     private bool reachedTarget = false;
-    private Rigidbody rigidbody;
+    private Rigidbody _body;
 
 
     // Start is called before the first frame update
     void Start()
     {
-        rigidbody = GetComponent<Rigidbody>();
+        _body = GetComponent<Rigidbody>();
+        _animator = GetComponent<Animator>();
     }
 
     // Update is called once per frame
     void Update()
     {
-        Vector3 targetDirection = (target.position - transform.position).normalized;
+        Vector3 targetPosition = new Vector3(target.position.x, transform.position.y, target.position.z);
+        Vector3 targetDirection = (targetPosition - transform.position).normalized;
 
         // the second argument, upwards, defaults to Vector3.up
         Quaternion rotation = Quaternion.LookRotation(targetDirection, Vector3.up);
@@ -30,9 +33,11 @@ public class CatAI : MonoBehaviour
 
         reachedTarget = CollisionRay(targetDirection);
         inView = GetComponent<Renderer>().IsVisibleFrom(Camera.main);
-        if(!reachedTarget && !inView) {
-            rigidbody.MovePosition(transform.position + targetDirection * speed * Time.deltaTime);
+        bool walking = !reachedTarget && !inView;
+        if(walking) {
+            _body.MovePosition(transform.position + targetDirection * speed * Time.deltaTime);
         }
+        _animator.SetBool("isWalking", walking);
     }
 
     bool CollisionRay(Vector3 direction) {
