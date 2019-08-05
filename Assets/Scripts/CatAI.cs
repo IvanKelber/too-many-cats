@@ -34,7 +34,7 @@ public class CatAI : MonoBehaviour
         reachedTarget = CollisionRay(targetDirection);
         inView = GetComponent<Renderer>().IsVisibleFrom(Camera.main);
         bool walking = !reachedTarget && !inView;
-        if(walking) {
+        if(walking && !_animator.GetCurrentAnimatorStateInfo(0).IsName("Cat_Sit")) {
             _body.MovePosition(transform.position + targetDirection * speed * Time.deltaTime);
         }
         _animator.SetBool("isWalking", walking);
