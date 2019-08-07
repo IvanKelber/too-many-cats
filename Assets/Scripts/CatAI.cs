@@ -7,6 +7,8 @@ public class CatAI : MonoBehaviour
     public Transform target;
     public float speed = 5.0f;
     public LayerMask targetLayerMask;
+    public Material[] possibleMaterials;
+    public Camera playerCam;
 
     private Animator _animator;
     private bool inView = false;
@@ -14,11 +16,23 @@ public class CatAI : MonoBehaviour
     private Rigidbody _body;
 
 
+
     // Start is called before the first frame update
-    void Start()
+    void Awake()
     {
         _body = GetComponent<Rigidbody>();
         _animator = GetComponent<Animator>();
+        if(possibleMaterials.Length > 0) {
+            Component[] renderers = GetComponentsInChildren(typeof(SkinnedMeshRenderer));
+            if(renderers.Length == 1) {
+                SkinnedMeshRenderer renderer = renderers[0] as SkinnedMeshRenderer;
+                renderer.material = possibleMaterials[Random.Range(0,possibleMaterials.Length)];
+                print(renderer.material);
+            }
+        }
+        if(playerCam == null) {
+            playerCam = Camera.main;
+        }
     }
 
     // Update is called once per frame
@@ -32,7 +46,7 @@ public class CatAI : MonoBehaviour
         transform.rotation = rotation;
 
         reachedTarget = CollisionRay(targetDirection);
-        inView = GetComponent<Renderer>().IsVisibleFrom(Camera.main);
+        inView = GetComponent<Renderer>().IsVisibleFrom(playerCam);
         bool walking = !reachedTarget && !inView;
         if(walking && !_animator.GetCurrentAnimatorStateInfo(0).IsName("Cat_Sit")) {
             _body.MovePosition(transform.position + targetDirection * speed * Time.deltaTime);
