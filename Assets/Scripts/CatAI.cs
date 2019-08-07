@@ -14,6 +14,7 @@ public class CatAI : MonoBehaviour
     private bool inView = false;
     private bool reachedTarget = false;
     private Rigidbody _body;
+    private SkinnedMeshRenderer _renderer;
 
 
 
@@ -25,9 +26,8 @@ public class CatAI : MonoBehaviour
         if(possibleMaterials.Length > 0) {
             Component[] renderers = GetComponentsInChildren(typeof(SkinnedMeshRenderer));
             if(renderers.Length == 1) {
-                SkinnedMeshRenderer renderer = renderers[0] as SkinnedMeshRenderer;
-                renderer.material = possibleMaterials[Random.Range(0,possibleMaterials.Length)];
-                print(renderer.material);
+                _renderer = renderers[0] as SkinnedMeshRenderer;
+                _renderer.material = possibleMaterials[Random.Range(0,possibleMaterials.Length)];
             }
         }
         if(playerCam == null) {
@@ -46,7 +46,7 @@ public class CatAI : MonoBehaviour
         transform.rotation = rotation;
 
         reachedTarget = CollisionRay(targetDirection);
-        inView = GetComponent<Renderer>().IsVisibleFrom(playerCam);
+        inView = _renderer.IsVisibleFrom(playerCam);
         bool walking = !reachedTarget && !inView;
         if(walking && !_animator.GetCurrentAnimatorStateInfo(0).IsName("Cat_Sit")) {
             _body.MovePosition(transform.position + targetDirection * speed * Time.deltaTime);
