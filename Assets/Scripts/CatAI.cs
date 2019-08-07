@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -27,7 +28,9 @@ public class CatAI : MonoBehaviour
             Component[] renderers = GetComponentsInChildren(typeof(SkinnedMeshRenderer));
             if(renderers.Length == 1) {
                 _renderer = renderers[0] as SkinnedMeshRenderer;
-                _renderer.material = possibleMaterials[Random.Range(0,possibleMaterials.Length)];
+                _renderer.material = possibleMaterials[UnityEngine.Random.Range(0,possibleMaterials.Length)];
+            } else {
+                throw new System.IndexOutOfRangeException("Why is there more or less than 1 SkinnedMeshRenderer: " + renderers.Length);
             }
         }
         if(playerCam == null) {
