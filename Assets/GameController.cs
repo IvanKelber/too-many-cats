@@ -6,20 +6,27 @@ public class GameController : MonoBehaviour
 {
 
     public bool isTesting = false;
-    [Range(0,20)]
+    [Range(0,50)]
     public float startingDistance = 10;
     public float startingNoise = 1;
 
     public Transform catsParent;
 
     private List<Transform> _cats = new List<Transform>();
+    private Vector3 _playerPosition;
 
     // Start is called before the first frame update
     void Start()
     {  
         startingNoise = Mathf.Clamp(0, startingDistance/2, startingNoise);
         for(int i = 0; i < catsParent.transform.childCount; i++) {
-            _cats.Add(catsParent.GetChild(i));
+            Transform cat = catsParent.GetChild(i);
+            cat.position = catStartingPosition();
+            _cats.Add(cat);
+            if(_playerPosition == null) {
+                Vector3 position = cat.GetComponent<CatAI>().target.position;
+                _playerPosition = new Vector3(position.x, cat.position.y, position.z);
+            }
         }
 
     }
@@ -39,12 +46,19 @@ public class GameController : MonoBehaviour
         yield return null;
     }
 
+    Vector3 catStartingPosition() {
+        float angle = Random.Range(0,360);
+        float radius = startingDistance + Random.Range(0, startingNoise * 2) - startingNoise;
+
+        Vector3 offset = new Vector3(Mathf.Cos(angle), _playerPosition.y, Mathf.Sin(angle)).normalized * radius;
+        print(_playerPosition + offset);
+        print( (_playerPosition + offset).magnitude);
+        return _playerPosition + offset;
+    }
+
     Vector3 directionFromPlayer(Transform cat) {
-        CatAI catAI = cat.GetComponent<CatAI>();
         //Only consider the horizontal direction between the cat and the cat's target (the player)
-        Vector3 playerPosition = new Vector3(catAI.target.position.x, cat.position.y, catAI.target.position.z);
-        Vector3 direction = (cat.position - playerPosition).normalized;
-        return direction;
+        return (cat.position - _playerPosition).normalized;
     }
 
     private void OnDrawGizmos() {
@@ -53,5 +67,7 @@ public class GameController : MonoBehaviour
         foreach(Transform cat in _cats) {
             Gizmos.DrawLine(cat.position, cat.position + directionFromPlayer(cat) * startingNoise);
         }
+        Gizmos.color = Color.white;
+        Gizmos.DrawWireSphere(_playerPosition, startingDistance);
     }
 }

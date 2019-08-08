@@ -1033,8 +1033,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isTesting: 1
-  startingDistance: 10
-  startingNoise: 10
+  startingDistance: 28.6
+  startingNoise: 1
   catsParent: {fileID: 333192539}
 --- !u!4 &1386642879
 Transform:
