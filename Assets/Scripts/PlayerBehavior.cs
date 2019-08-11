@@ -28,4 +28,12 @@ public class PlayerBehavior : MonoBehaviour
     public void deselect() {
         _renderer.material = _defaultMaterial;
     }
+
+    public Camera getCamera() {
+        return GetComponentInChildren<Camera>();
+    }
+
+    public void setGameController(GameController gameController) {
+        GetComponentInChildren<SpotPlayer>().setGameController(gameController);
+    }
 }

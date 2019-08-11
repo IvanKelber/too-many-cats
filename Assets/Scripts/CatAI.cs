@@ -4,8 +4,9 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class CatAI : MonoBehaviour
-{
-    public Transform target;
+{   
+    [SerializeField]
+    private Transform target;
     public float speed = 5.0f;
     public LayerMask targetLayerMask;
     public Material[] possibleMaterials;
@@ -17,10 +18,8 @@ public class CatAI : MonoBehaviour
     private Rigidbody _body;
     private SkinnedMeshRenderer _renderer;
 
-
-
     // Start is called before the first frame update
-    void Awake()
+    void Start()
     {
         _body = GetComponent<Rigidbody>();
         _animator = GetComponent<Animator>();
@@ -33,8 +32,9 @@ public class CatAI : MonoBehaviour
                 throw new System.IndexOutOfRangeException("Why is there more or less than 1 SkinnedMeshRenderer: " + renderers.Length);
             }
         }
+        playerCam = target.gameObject.GetComponent<PlayerBehavior>().getCamera();
         if(playerCam == null) {
-            playerCam = Camera.main;
+            throw new System.NullReferenceException("Player cam does not exist");
         }
     }
 
@@ -65,6 +65,14 @@ public class CatAI : MonoBehaviour
             return true;
         }
         return false;
+    }
+
+    public void setTarget(Transform newTarget) {
+        target = newTarget;
+    }
+
+    public Transform getTarget() {
+        return target;
     }
 
 }

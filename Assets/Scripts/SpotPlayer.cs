@@ -8,6 +8,8 @@ public class SpotPlayer : MonoBehaviour
     public float distance = 1000;
     [Range(1, 10)]
     public float fieldOfViewScale = 1;
+    public GameController gameController;
+
     private PlayerBehavior _spottedPlayer;
     private Camera _camera;
     // Start is called before the first frame update
@@ -29,22 +31,13 @@ public class SpotPlayer : MonoBehaviour
             _spottedPlayer.select();
         }
 
-        // RaycastHit hit;
-        // if(Physics.Raycast(transform.position, transform.forward, out hit, 1000, playerMask)) {
-        //     PlayerBehavior player =  hit.collider.gameObject.GetComponent<PlayerBehavior>();
-        //     if(_spottedPlayer != null) {
-        //         _spottedPlayer.deselect();
-        //     }
-        //     _spottedPlayer = player;
-        //     player.select();
-        //     print("Player selected");
-        // } else {
-        //     if(_spottedPlayer != null) {
-        //         _spottedPlayer.deselect();
-        //         _spottedPlayer = null;
-        //         print("player deselected");
-        //     }
-        // }
+        if(Input.GetButtonDown("Jump")) {
+            gameController.setPlayerView(_spottedPlayer);
+        }
+    }
+
+    public void setGameController(GameController gameController) {
+        this.gameController = gameController;
     }
 
     PlayerBehavior selectPlayer() {
@@ -69,16 +62,14 @@ public class SpotPlayer : MonoBehaviour
     }
 
     private void OnDrawGizmos() {
-        Gizmos.color = Color.cyan;
-        if(_camera != null) {
-            float fieldBound = (_camera.fieldOfView/(2*fieldOfViewScale) + transform.eulerAngles.y) * Mathf.Deg2Rad ;
-            Vector3 left = new Vector3(transform.forward.x * Mathf.Sin(-fieldBound), transform.forward.y, transform.forward.z * Mathf.Cos(-fieldBound));
-            Vector3 right = new Vector3(transform.forward.x * Mathf.Sin(fieldBound), transform.forward.y, transform.forward.z * Mathf.Cos(fieldBound));
+        // Gizmos.color = Color.cyan;
+        // if(_camera != null) {
+        //     float fieldBound = (_camera.fieldOfView/(2*fieldOfViewScale) + transform.eulerAngles.y) * Mathf.Deg2Rad ;
+        //     Vector3 left = new Vector3(transform.forward.x * Mathf.Sin(-fieldBound), transform.forward.y, transform.forward.z * Mathf.Cos(-fieldBound));
+        //     Vector3 right = new Vector3(transform.forward.x * Mathf.Sin(fieldBound), transform.forward.y, transform.forward.z * Mathf.Cos(fieldBound));
 
-            Gizmos.DrawLine(transform.position, left*distance);
-            Gizmos.DrawLine(transform.position, right*distance);
-        }
-
-
+        //     Gizmos.DrawLine(transform.position, left*distance);
+        //     Gizmos.DrawLine(transform.position, right*distance);
+        // }
     }
 }

@@ -256,3 +256,5 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 256
   distance: 1000
+  fieldOfViewScale: 1
+  gameController: {fileID: 0}

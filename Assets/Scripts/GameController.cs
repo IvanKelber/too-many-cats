@@ -12,19 +12,30 @@ public class GameController : MonoBehaviour
     public float startingNoise = 1;
 
     public Transform catsParent;
+    public GameObject playerPrefab;
 
     private List<Transform> _cats = new List<Transform>();
     private Vector3 _playerPosition;
 
+    private GameObject currentPlayer;
+
+    void Awake() {
+        currentPlayer = Instantiate(playerPrefab, transform);
+        currentPlayer.GetComponent<PlayerBehavior>().setGameController(this);
+        updatePlayerPosition();
+        for(int i = 0; i < catsParent.transform.childCount; i++) {
+            Transform cat = catsParent.GetChild(i);
+            cat.gameObject.GetComponent<CatAI>().setTarget(currentPlayer.transform);
+            cat.position = catStartingPosition(cat.position.y);
+            _cats.Add(cat);
+        }
+    }
+
     // Start is called before the first frame update
     void Start()
     {  
-        for(int i = 0; i < catsParent.transform.childCount; i++) {
-            Transform cat = catsParent.GetChild(i);
-            cat.position = catStartingPosition();
-            _cats.Add(cat);
-        }
-        updatePlayerPosition();
+
+        // updatePlayerPosition();
     }
 
     // Update is called once per frame
@@ -36,6 +47,11 @@ public class GameController : MonoBehaviour
         }
     }
 
+    public void setPlayerView(PlayerBehavior newPlayer) {
+
+    }
+
+
     IEnumerator DisperseCats() {
         foreach(Transform cat in _cats) {
             cat.Translate(directionFromPlayer(cat) * getNoisyDistance(), Space.World);
@@ -43,11 +59,11 @@ public class GameController : MonoBehaviour
         yield return null;
     }
 
-    Vector3 catStartingPosition() {
+    Vector3 catStartingPosition(float catPositionY) {
         float angle = Random.Range(0,360);
         float radius = getNoisyDistance();
 
-        Vector3 offset = new Vector3(Mathf.Cos(angle), _playerPosition.y, Mathf.Sin(angle)).normalized * radius;
+        Vector3 offset = new Vector3(Mathf.Sin(angle), catPositionY, Mathf.Cos(angle)).normalized * radius;
         return _playerPosition + offset;
     }
 
@@ -57,24 +73,24 @@ public class GameController : MonoBehaviour
 
     Vector3 directionFromPlayer(Transform cat) {
         //Only consider the horizontal direction between the cat and the cat's target (the player)
+        updatePlayerPosition();
         return (cat.position - _playerPosition).normalized;
     }
 
     private void updatePlayerPosition() {
-        if(_cats.Count > 0) {
+        if(currentPlayer && _cats.Count > 0) {
             Transform cat = _cats[0];
-            Vector3 position = cat.GetComponent<CatAI>().target.position;
-            _playerPosition = new Vector3(position.x, cat.position.y, position.z);
+            _playerPosition = new Vector3(currentPlayer.transform.position.x, cat.position.y, currentPlayer.transform.position.z);
         }
     }
 
     private void OnDrawGizmos() {
-        //print(_cats.Count);
         Gizmos.color = Color.red;
         foreach(Transform cat in _cats) {
-            Gizmos.DrawLine(cat.position, cat.position + directionFromPlayer(cat) * startingNoise);
+            Gizmos.DrawLine(cat.position, cat.position + directionFromPlayer(cat) * startingDistance);
         }
         Gizmos.color = Color.white;
         Gizmos.DrawWireSphere(_playerPosition, startingDistance);
     }
+
 }
