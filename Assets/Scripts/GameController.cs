@@ -85,12 +85,14 @@ public class GameController : MonoBehaviour
     }
 
     private void OnDrawGizmos() {
-        Gizmos.color = Color.red;
-        foreach(Transform cat in _cats) {
-            Gizmos.DrawLine(cat.position, cat.position + directionFromPlayer(cat) * startingDistance);
+        if(isTesting) {
+            Gizmos.color = Color.red;
+            foreach(Transform cat in _cats) {
+                Gizmos.DrawLine(cat.position, cat.position + directionFromPlayer(cat) * startingDistance);
+            }
+            Gizmos.color = Color.white;
+            Gizmos.DrawWireSphere(_playerPosition, startingDistance);
         }
-        Gizmos.color = Color.white;
-        Gizmos.DrawWireSphere(_playerPosition, startingDistance);
     }
 
 }
