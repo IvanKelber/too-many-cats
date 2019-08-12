@@ -18,7 +18,9 @@ public class PlayerBehavior : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+        if(Input.GetKeyDown(KeyCode.C)) {
+            turnOff();
+        }
     }
 
     public void select() {
@@ -30,10 +32,20 @@ public class PlayerBehavior : MonoBehaviour
     }
 
     public Camera getCamera() {
-        return GetComponentInChildren<Camera>();
+        Camera _cam = gameObject.GetComponentInChildren<Camera>();
+        return _cam;
     }
 
     public void setGameController(GameController gameController) {
         GetComponentInChildren<SpotPlayer>().setGameController(gameController);
     }
+
+    public void turnOn() {
+        transform.GetChild(0).gameObject.SetActive(true);
+    }
+
+    public void turnOff() {
+        transform.GetChild(0).gameObject.SetActive(false);
+    }
+
 }

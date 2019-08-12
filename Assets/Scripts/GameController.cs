@@ -17,25 +17,18 @@ public class GameController : MonoBehaviour
     private List<Transform> _cats = new List<Transform>();
     private Vector3 _playerPosition;
 
-    private GameObject currentPlayer;
+    private GameObject _currentPlayer;
 
     void Awake() {
-        currentPlayer = Instantiate(playerPrefab, transform);
-        currentPlayer.GetComponent<PlayerBehavior>().setGameController(this);
+        _currentPlayer = Instantiate(playerPrefab, transform);
+        _currentPlayer.GetComponent<PlayerBehavior>().setGameController(this);
         updatePlayerPosition();
         for(int i = 0; i < catsParent.transform.childCount; i++) {
             Transform cat = catsParent.GetChild(i);
-            cat.gameObject.GetComponent<CatAI>().setTarget(currentPlayer.transform);
+            cat.gameObject.GetComponent<CatAI>().setTarget(_currentPlayer.transform);
             cat.position = catStartingPosition(cat.position.y);
             _cats.Add(cat);
         }
-    }
-
-    // Start is called before the first frame update
-    void Start()
-    {  
-
-        // updatePlayerPosition();
     }
 
     // Update is called once per frame
@@ -48,7 +41,17 @@ public class GameController : MonoBehaviour
     }
 
     public void setPlayerView(PlayerBehavior newPlayer) {
+        newPlayer.GetComponent<PlayerBehavior>().turnOn();
+        _currentPlayer.GetComponent<PlayerBehavior>().turnOff();
+        _currentPlayer = newPlayer.gameObject;
+        updatePlayerPosition();
+        updateCats();
+    }
 
+    void updateCats() {
+        foreach(Transform cat in _cats) {
+            cat.GetComponent<CatAI>().setTarget(_currentPlayer.transform);
+        }
     }
 
 
@@ -78,9 +81,9 @@ public class GameController : MonoBehaviour
     }
 
     private void updatePlayerPosition() {
-        if(currentPlayer && _cats.Count > 0) {
+        if(_currentPlayer && _cats.Count > 0) {
             Transform cat = _cats[0];
-            _playerPosition = new Vector3(currentPlayer.transform.position.x, cat.position.y, currentPlayer.transform.position.z);
+            _playerPosition = new Vector3(_currentPlayer.transform.position.x, cat.position.y, _currentPlayer.transform.position.z);
         }
     }
 

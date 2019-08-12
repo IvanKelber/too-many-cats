@@ -16,7 +16,7 @@ public class SpotPlayer : MonoBehaviour
     void Start()
     {
         _camera = GetComponent<Camera>();
-        print("FOW: " + _camera.fieldOfView);
+        //print("FOW: " + _camera.fieldOfView);
     }
 
     // Update is called once per frame
@@ -32,6 +32,10 @@ public class SpotPlayer : MonoBehaviour
         }
 
         if(Input.GetButtonDown("Jump")) {
+            // if(_spottedPlayer != null) {
+            //     print("IEVK: spotted player: " + _spottedPlayer);
+            //     // _spottedPlayer.turnOn();
+            // }
             gameController.setPlayerView(_spottedPlayer);
         }
     }
