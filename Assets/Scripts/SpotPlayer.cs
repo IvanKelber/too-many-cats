@@ -36,7 +36,11 @@ public class SpotPlayer : MonoBehaviour
             //     print("IEVK: spotted player: " + _spottedPlayer);
             //     // _spottedPlayer.turnOn();
             // }
+            if(_spottedPlayer != null) {
+                print("IEVK _spottedPlayer: " +  _spottedPlayer);
+            }
             gameController.setPlayerView(_spottedPlayer);
+            _spottedPlayer = null;
         }
     }
 

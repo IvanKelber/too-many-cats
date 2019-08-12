@@ -42,6 +42,7 @@ public class GameController : MonoBehaviour
 
     public void setPlayerView(PlayerBehavior newPlayer) {
         newPlayer.GetComponent<PlayerBehavior>().turnOn();
+        newPlayer.deselect();
         _currentPlayer.GetComponent<PlayerBehavior>().turnOff();
         _currentPlayer = newPlayer.gameObject;
         updatePlayerPosition();
