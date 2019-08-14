@@ -32,10 +32,7 @@ public class CatAI : MonoBehaviour
                 throw new System.IndexOutOfRangeException("Why is there more or less than 1 SkinnedMeshRenderer: " + renderers.Length);
             }
         }
-        playerCam = target.gameObject.GetComponent<PlayerBehavior>().getCamera();
-        if(playerCam == null) {
-            throw new System.NullReferenceException("Player cam does not exist");
-        }
+        updateCamera();
     }
 
     // Update is called once per frame
@@ -69,6 +66,14 @@ public class CatAI : MonoBehaviour
 
     public void setTarget(Transform newTarget) {
         target = newTarget;
+        updateCamera();
+    }
+
+    private void updateCamera() {
+        playerCam = target.gameObject.GetComponent<PlayerBehavior>().getCamera();
+            if(playerCam == null) {
+                throw new System.NullReferenceException("Player cam does not exist");
+            }
     }
 
     public Transform getTarget() {
