@@ -12,6 +12,7 @@ public class SpotPlayer : MonoBehaviour
 
     private PlayerBehavior _spottedPlayer;
     private Camera _camera;
+    private int index {get; set;}
     // Start is called before the first frame update
     void Start()
     {
@@ -32,14 +33,7 @@ public class SpotPlayer : MonoBehaviour
         }
 
         if(Input.GetButtonDown("Jump")) {
-            // if(_spottedPlayer != null) {
-            //     print("IEVK: spotted player: " + _spottedPlayer);
-            //     // _spottedPlayer.turnOn();
-            // }
-            if(_spottedPlayer != null) {
-                print("IEVK _spottedPlayer: " +  _spottedPlayer);
-            }
-            gameController.setPlayerView(_spottedPlayer);
+            gameController.setPlayerView(_spottedPlayer.getIndex());
             _spottedPlayer = null;
         }
     }

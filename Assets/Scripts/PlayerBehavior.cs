@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -8,6 +9,7 @@ public class PlayerBehavior : MonoBehaviour
     public Material selectedMaterial;
     private Renderer _renderer;
     private Material _defaultMaterial;
+    private int index = 0;
     // Start is called before the first frame update
     void Start()
     {
@@ -37,7 +39,12 @@ public class PlayerBehavior : MonoBehaviour
     }
 
     public void setGameController(GameController gameController) {
-        GetComponentInChildren<SpotPlayer>().setGameController(gameController);
+        SpotPlayer spotPlayer = GetComponentInChildren<SpotPlayer>();
+        if(spotPlayer) {
+            spotPlayer.setGameController(gameController);
+        } else {
+            throw new System.NullReferenceException("SpotPlayer does not exist.  Is the main camera active?");
+        }
     }
 
     public void turnOn() {
@@ -46,6 +53,14 @@ public class PlayerBehavior : MonoBehaviour
 
     public void turnOff() {
         transform.GetChild(0).gameObject.SetActive(false);
+    }
+
+    public int getIndex() {
+        return index;
+    }
+
+    public void setIndex(int index) {
+        this.index = index;
     }
 
 }

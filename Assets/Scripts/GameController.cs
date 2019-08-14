@@ -20,25 +20,22 @@ public class GameController : MonoBehaviour
     public int numPlayers = 1;
 
     private List<Transform> _cats = new List<Transform>();
-    private int _currentPlayerIndex;
 
     private Vector3 _playerPosition;
 
-    private GameObject _currentPlayer;
-
-    private List<Transform> _players = new List<Transform>();
+    private List<PlayerBehavior> _players = new List<PlayerBehavior>();
+    private int _playerIndex = 0;
 
     void Awake() {
         spawnPlayers(numPlayers);
-        // _currentPlayer = Instantiate(playerPrefab, transform);
-        // _currentPlayer.GetComponent<PlayerBehavior>().setGameController(this);
-        // updatePlayerPosition();
-        // for(int i = 0; i < catsParent.transform.childCount; i++) {
-        //     Transform cat = catsParent.GetChild(i);
-        //     cat.gameObject.GetComponent<CatAI>().setTarget(_currentPlayer.transform);
-        //     cat.position = catStartingPosition(cat.position.y);
-        //     _cats.Add(cat);
-        // }
+
+        updatePlayerPosition();
+        for(int i = 0; i < catsParent.transform.childCount; i++) {
+            Transform cat = catsParent.GetChild(i);
+            cat.gameObject.GetComponent<CatAI>().setTarget(_players[_playerIndex].transform);
+            cat.position = catStartingPosition(cat.position.y);
+            _cats.Add(cat);
+        }
     }
 
     // Update is called once per frame
@@ -50,11 +47,13 @@ public class GameController : MonoBehaviour
         }
     }
 
-    public void setPlayerView(PlayerBehavior newPlayer) {
-        newPlayer.GetComponent<PlayerBehavior>().turnOn();
+    public void setPlayerView(int newPlayerIndex) {
+        PlayerBehavior newPlayer = _players[newPlayerIndex];
+        newPlayer.turnOn();
         newPlayer.deselect();
-        _currentPlayer.GetComponent<PlayerBehavior>().turnOff();
-        _currentPlayer = newPlayer.gameObject;
+        newPlayer.setGameController(this);
+        _players[_playerIndex].turnOff();
+        _playerIndex = newPlayerIndex;
         updatePlayerPosition();
         updateCats();
     }
@@ -67,10 +66,13 @@ public class GameController : MonoBehaviour
             float radAngle = currentAngle * Mathf.Deg2Rad;
             Vector3 position = new Vector3(Mathf.Sin(radAngle)*playerRadius, 2, Mathf.Cos(radAngle)*playerRadius);
             GameObject player = Instantiate(playerPrefab, position, Quaternion.identity, transform);
-            _players.Add(player.transform);
+            PlayerBehavior playerBehavior = player.GetComponent<PlayerBehavior>();
+            playerBehavior.setIndex(i);
+            _players.Add(playerBehavior);
             currentAngle += playerDistance;
         }
-        
+        _players[_playerIndex].turnOn();
+        _players[_playerIndex].setGameController(this);
     }
 
     private void spawnCats(int numberOfCats) {
@@ -79,7 +81,7 @@ public class GameController : MonoBehaviour
 
     void updateCats() {
         foreach(Transform cat in _cats) {
-            cat.GetComponent<CatAI>().setTarget(_currentPlayer.transform);
+            cat.GetComponent<CatAI>().setTarget(_players[_playerIndex].transform);
         }
     }
 
@@ -110,9 +112,10 @@ public class GameController : MonoBehaviour
     }
 
     private void updatePlayerPosition() {
-        if(_currentPlayer && _cats.Count > 0) {
+        if(_cats.Count > 0) {
             Transform cat = _cats[0];
-            _playerPosition = new Vector3(_currentPlayer.transform.position.x, cat.position.y, _currentPlayer.transform.position.z);
+            Vector3 playerPosition = _players[_playerIndex].transform.position;
+            _playerPosition = new Vector3(playerPosition.x, cat.position.y, playerPosition.z);
         }
     }
 
