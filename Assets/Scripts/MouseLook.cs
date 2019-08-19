@@ -23,7 +23,6 @@ public class MouseLook : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        print(body != null);
     }
 
     // Update is called once per frame

@@ -7,6 +7,8 @@ public class GameController : MonoBehaviour
 
     public bool isTesting = false;
 
+    public TargetedPlayer targetedPlayer;
+
     // Players
     public GameObject playerPrefab;
     [Range(0,50)]
@@ -28,24 +30,19 @@ public class GameController : MonoBehaviour
 
     void Awake() {
         spawnPlayers(numPlayers);
+        setTargetedPlayer();
         updatePlayerPosition();
         spawnCats(numCats);
-    }
 
-    // Update is called once per frame
-    void Update()
-    {
     }
 
     public void setPlayerView(int newPlayerIndex) {
         PlayerBehavior newPlayer = _players[newPlayerIndex];
-        newPlayer.turnOn();
         newPlayer.deselect();
-        newPlayer.setGameController(this);
-        _players[_playerIndex].turnOff();
+        //newPlayer.setGameController(this);
         _playerIndex = newPlayerIndex;
+        setTargetedPlayer();
         updatePlayerPosition();
-        updateCats();
     }
 
     private void spawnPlayers(int numberOfPlayers) {
@@ -60,8 +57,11 @@ public class GameController : MonoBehaviour
             _players.Add(playerBehavior);
             currentAngle += playerDistance;
         }
-        _players[_playerIndex].turnOn();
-        _players[_playerIndex].setGameController(this);
+        //_players[_playerIndex].setGameController(this);
+    }
+    
+    private void setTargetedPlayer() {
+        targetedPlayer.SetNewPlayer(_players[_playerIndex]);
     }
 
     private void spawnCats(int numberOfCats) {
@@ -72,15 +72,9 @@ public class GameController : MonoBehaviour
             Vector3 position = new Vector3(Mathf.Sin(radAngle)*catRadius, 2, Mathf.Cos(radAngle)*catRadius);
             GameObject catObj = Instantiate(catPrefab, position, Quaternion.identity, transform);
             CatAI cat = catObj.GetComponent<CatAI>();
-            cat.setTarget(_players[_playerIndex].transform);
+            cat.setTargetedPlayer(targetedPlayer);
             _cats.Add(cat);
             currentAngle += catDistance;
-        }
-    }
-
-    void updateCats() {
-        foreach(CatAI cat in _cats) {
-           cat.setTarget(_players[_playerIndex].transform);
         }
     }
 
@@ -93,7 +87,7 @@ public class GameController : MonoBehaviour
     private void updatePlayerPosition() {
         if(_cats.Count > 0) {
             Transform cat = _cats[0].transform;
-            Vector3 playerPosition = _players[_playerIndex].transform.position;
+            Vector3 playerPosition = targetedPlayer.GetPosition();
             _playerPosition = new Vector3(playerPosition.x, cat.position.y, playerPosition.z);
         }
     }

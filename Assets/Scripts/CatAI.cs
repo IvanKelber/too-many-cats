@@ -5,8 +5,9 @@ using UnityEngine;
 
 public class CatAI : MonoBehaviour
 {   
+    public TargetedPlayer targetedPlayer;
+
     [SerializeField]
-    private Transform target;
     public float speed = 5.0f;
     public LayerMask targetLayerMask;
     public Material[] possibleMaterials;
@@ -32,13 +33,13 @@ public class CatAI : MonoBehaviour
                 throw new System.IndexOutOfRangeException("Why is there more or less than 1 SkinnedMeshRenderer: " + renderers.Length);
             }
         }
-        updateCamera();
     }
 
     // Update is called once per frame
     void Update()
     {
-        Vector3 targetPosition = new Vector3(target.position.x, transform.position.y, target.position.z);
+        Vector3 target = targetedPlayer.GetPosition();
+        Vector3 targetPosition = new Vector3(target.x, transform.position.y, target.z);
         Vector3 targetDirection = (targetPosition - transform.position).normalized;
 
         // the second argument, upwards, defaults to Vector3.up
@@ -46,7 +47,7 @@ public class CatAI : MonoBehaviour
         transform.rotation = rotation;
 
         reachedTarget = CollisionRay(targetDirection);
-        inView = _renderer.IsVisibleFrom(playerCam);
+        inView = _renderer.IsVisibleFrom(targetedPlayer.cameraHelper.camera);
         bool walking = !reachedTarget && !inView;
         if(walking && !_animator.GetCurrentAnimatorStateInfo(0).IsName("Cat_Sit")) {
             _body.MovePosition(transform.position + targetDirection * speed * Time.deltaTime);
@@ -56,7 +57,7 @@ public class CatAI : MonoBehaviour
 
     bool CollisionRay(Vector3 direction) {
         RaycastHit hit;
-        if(Physics.Raycast(transform.position, direction, out hit, 2, targetLayerMask)) {
+        if(Physics.Raycast(transform.position, direction, out hit, 3, targetLayerMask)) {
             //To do other stuff in here.
             // Like some animation
             return true;
@@ -64,20 +65,12 @@ public class CatAI : MonoBehaviour
         return false;
     }
 
-    public void setTarget(Transform newTarget) {
-        target = newTarget;
-        updateCamera();
+    public void setTargetedPlayer(TargetedPlayer targetedPlayer) {
+        this.targetedPlayer = targetedPlayer;
     }
 
-    private void updateCamera() {
-        playerCam = target.gameObject.GetComponent<PlayerBehavior>().getCamera();
-            if(playerCam == null) {
-                throw new System.NullReferenceException("Player cam does not exist");
-            }
-    }
-
-    public Transform getTarget() {
-        return target;
+    public Vector3 getTarget() {
+        return targetedPlayer.GetPosition();
     }
 
 }

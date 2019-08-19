@@ -17,14 +17,6 @@ public class PlayerBehavior : MonoBehaviour
         _defaultMaterial = _renderer.material;
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        if(Input.GetKeyDown(KeyCode.C)) {
-            turnOff();
-        }
-    }
-
     public void select() {
         _renderer.material = selectedMaterial;
     }
@@ -33,9 +25,16 @@ public class PlayerBehavior : MonoBehaviour
         _renderer.material = _defaultMaterial;
     }
 
-    public Camera getCamera() {
-        Camera _cam = gameObject.GetComponentInChildren<Camera>();
-        return _cam;
+
+    public CameraHelper getCamera() {
+        foreach(Transform child in transform) {
+            Camera cam = child.GetComponent<Camera>();
+            if(cam != null) {
+                return new CameraHelper(cam, child.gameObject);
+            }
+        }
+        Debug.Log("get camera returns null.");
+        return null;
     }
 
     public void setGameController(GameController gameController) {
