@@ -39,8 +39,7 @@ public class CatAI : MonoBehaviour
     void Update()
     {
         Vector3 target = targetedPlayer.GetPosition();
-        Vector3 targetPosition = new Vector3(target.x, transform.position.y, target.z);
-        Vector3 targetDirection = (targetPosition - transform.position).normalized;
+        Vector3 targetDirection = directionFromCat(target);
 
         // the second argument, upwards, defaults to Vector3.up
         Quaternion rotation = Quaternion.LookRotation(targetDirection, Vector3.up);
@@ -68,9 +67,11 @@ public class CatAI : MonoBehaviour
     public void setTargetedPlayer(TargetedPlayer targetedPlayer) {
         this.targetedPlayer = targetedPlayer;
     }
-
-    public Vector3 getTarget() {
-        return targetedPlayer.GetPosition();
+    
+    //Uses the height of the starting transform so that the resulting vector is flat.
+    public Vector3 directionFromCat(Vector3 end) {
+        Vector3 start = transform.position;
+        float height = start.y;
+        return (new Vector3(end.x, height, end.z) - start).normalized;
     }
-
 }

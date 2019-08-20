@@ -8,11 +8,13 @@ public class TargetedPlayer : ScriptableObject, ISerializationCallbackReceiver
 {
     public Vector3 position = Vector3.zero;
     public CameraHelper cameraHelper = null;
-    public PlayerBehavior playerBehavior = null;
+    
+    // [NonSerialized]
+    public PlayerBehavior InitialPlayerBehavior = null;
+    private bool isEmpty = true;
 
     public void SetPosition(Vector3 other) {
         position = other;
-        
     }
 
     public void SetCamera(CameraHelper other) {
@@ -24,15 +26,15 @@ public class TargetedPlayer : ScriptableObject, ISerializationCallbackReceiver
         cameraHelper = other;
     }
 
-    public void SetPlayerBehavior(PlayerBehavior other) {
-        playerBehavior = other;
-    }
-
     public void SetNewPlayer(PlayerBehavior other) {
+        if(other == null) {
+            isEmpty = true;
+            return;
+        }
         SetPosition(other.transform.position);
         CameraHelper cameraHelper = other.getCamera();
         SetCamera(cameraHelper);
-        SetPlayerBehavior(other);
+        isEmpty = false;
     }
 
     public Vector3 GetPosition() {
@@ -40,12 +42,21 @@ public class TargetedPlayer : ScriptableObject, ISerializationCallbackReceiver
     }
 
     public void OnAfterDeserialize() {
-
+        InitialPlayerBehavior = null;
+        isEmpty = true;
     }
 
     public void OnBeforeSerialize() {
         // Nothing
     
+    }
+
+    public void Awake() {
+        SetNewPlayer(InitialPlayerBehavior);
+    }
+
+    public bool isNull() {
+        return isEmpty;
     }
 
 }

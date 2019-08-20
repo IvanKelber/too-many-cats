@@ -70,18 +70,14 @@ public class GameController : MonoBehaviour
         }
     }
 
-    //Uses the height of the starting transform so that the resulting vector is flat.
-    private Vector3 normalizedDirection(Vector3 start, Vector3 end) {
-        float height = start.y;
-        return (new Vector3(end.x, height, end.z) - start).normalized;
-    }
+
 
     private void OnDrawGizmos() {
         if(isTesting) {
             Gizmos.color = Color.red;
             Vector3 playerPosition = targetedPlayer.GetPosition();
             foreach(CatAI cat in _cats) {
-                Gizmos.DrawLine(cat.transform.position, cat.transform.position + normalizedDirection(cat.transform.position, playerPosition) * catRadius);
+                Gizmos.DrawLine(cat.transform.position, cat.transform.position + cat.directionFromCat(playerPosition) * catRadius);
             }
             Gizmos.color = Color.white;
             Gizmos.DrawWireSphere(playerPosition, catRadius);

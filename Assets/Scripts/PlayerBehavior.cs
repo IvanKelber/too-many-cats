@@ -10,6 +10,18 @@ public class PlayerBehavior : MonoBehaviour
     public TargetedPlayer targetedPlayer;
     private Renderer _renderer;
     private Material _defaultMaterial;
+
+    void Awake() {
+        Debug.Log(targetedPlayer);
+        if(targetedPlayer == null) {
+            targetedPlayer = ScriptableObject.CreateInstance<TargetedPlayer>();
+        }
+        if(targetedPlayer.isNull()) {
+            targetedPlayer.SetNewPlayer(this);
+            Debug.Log(targetedPlayer.GetPosition() == this.transform.position);
+        }
+    }
+
     // Start is called before the first frame update
     void Start()
     {
