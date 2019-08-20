@@ -17,8 +17,6 @@ public class GameController : MonoBehaviour
     public int numPlayers = 1;
     private List<PlayerBehavior> _players = new List<PlayerBehavior>();
     private int _playerIndex = 0;
-    private Vector3 _playerPosition;
-
 
     // Cats
     public GameObject catPrefab;
@@ -30,26 +28,18 @@ public class GameController : MonoBehaviour
 
     void Awake() {
         spawnPlayers(numPlayers);
-        setTargetedPlayer();
-        updatePlayerPosition();
         spawnCats(numCats);
-    }
-
-    public void setPlayerView(int newPlayerIndex) {
-        PlayerBehavior newPlayer = _players[newPlayerIndex];
-        newPlayer.deselect();
-        _playerIndex = newPlayerIndex;
         setTargetedPlayer();
-        updatePlayerPosition();
     }
 
+    // Logic for selecting a new player.
     public void setPlayerView(PlayerBehavior newPlayer) {
         newPlayer.deselect();
         _playerIndex = newPlayer.getIndex();
         setTargetedPlayer();
-        updatePlayerPosition();
     }
 
+    // Spawns a group of static players that are playerRadius away from the center.
     private void spawnPlayers(int numberOfPlayers) {
         float playerDistance = 360.0f/numberOfPlayers;
         float currentAngle = Random.Range(0,360);
@@ -64,11 +54,14 @@ public class GameController : MonoBehaviour
         }
     }
     
+    // Sets the targetedPlayer object to the current player.  
+    // Also ensures that the targetedPlayer's game controller is set for spotplayer to work properly.
     private void setTargetedPlayer() {
         targetedPlayer.SetNewPlayer(_players[_playerIndex]);
         _players[_playerIndex].setGameController(this);
     }
 
+    // Spawns cats in a random location catRadius units away from the initial targeted player
     private void spawnCats(int numberOfCats) {
         float catDistance = 360.0f/numberOfCats;
         float currentAngle = Random.Range(0,360);
@@ -83,34 +76,24 @@ public class GameController : MonoBehaviour
         }
     }
 
-    Vector3 directionFromPlayer(Transform cat) {
-        //Only consider the horizontal direction between the cat and the cat's target (the player)
-        updatePlayerPosition();
-        return (cat.position - _playerPosition).normalized;
-    }
-
-    private void updatePlayerPosition() {
-        if(_cats.Count > 0) {
-            Transform cat = _cats[0].transform;
-            Vector3 playerPosition = targetedPlayer.GetPosition();
-            _playerPosition = new Vector3(playerPosition.x, cat.position.y, playerPosition.z);
-        }
+    //Uses the height of the starting transform so that the resulting vector is flat.
+    private Vector3 normalizedDirection(Vector3 start, Vector3 end) {
+        float height = start.y;
+        return (new Vector3(end.x, height, end.z) - start).normalized;
     }
 
     private void OnDrawGizmos() {
         if(isTesting) {
             Gizmos.color = Color.red;
+            Vector3 playerPosition = targetedPlayer.GetPosition();
             foreach(CatAI cat in _cats) {
-                Gizmos.DrawLine(cat.transform.position, cat.transform.position + directionFromPlayer(cat.transform) * catRadius);
+                Gizmos.DrawLine(cat.transform.position, cat.transform.position + normalizedDirection(cat.transform.position, playerPosition) * catRadius);
             }
             Gizmos.color = Color.white;
-            Gizmos.DrawWireSphere(_playerPosition, catRadius);
+            Gizmos.DrawWireSphere(playerPosition, catRadius);
         }
     }
 
-    private Vector normalizedDirection(Transform start, Transform end) {
-        float height = start.y;
-        return (new Vector3(end.x, height, end.z) - start).normalized;
-    }
+
 
 }
