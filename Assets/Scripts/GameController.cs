@@ -16,7 +16,6 @@ public class GameController : MonoBehaviour
     [Range(1,10)]
     public int numPlayers = 1;
     private List<PlayerBehavior> _players = new List<PlayerBehavior>();
-    private int _playerIndex = 0;
 
     // Cats
     public GameObject catPrefab;
@@ -29,14 +28,17 @@ public class GameController : MonoBehaviour
     void Awake() {
         spawnPlayers(numPlayers);
         spawnCats(numCats);
-        setTargetedPlayer();
+        if(_players.Count > 0) {
+            setTargetedPlayer(_players[0]);
+        } else {
+            throw new System.NullReferenceException("No player behaviors in scene to target.");
+        }
     }
 
     // Logic for selecting a new player.
     public void setPlayerView(PlayerBehavior newPlayer) {
         newPlayer.deselect();
-        _playerIndex = newPlayer.getIndex();
-        setTargetedPlayer();
+        setTargetedPlayer(newPlayer);
     }
 
     // Spawns a group of static players that are playerRadius away from the center.
@@ -48,7 +50,6 @@ public class GameController : MonoBehaviour
             Vector3 position = new Vector3(Mathf.Sin(radAngle)*playerRadius, 2, Mathf.Cos(radAngle)*playerRadius);
             GameObject player = Instantiate(playerPrefab, position, Quaternion.identity, transform);
             PlayerBehavior playerBehavior = player.GetComponent<PlayerBehavior>();
-            playerBehavior.setIndex(i);
             _players.Add(playerBehavior);
             currentAngle += playerDistance;
         }
@@ -56,9 +57,9 @@ public class GameController : MonoBehaviour
     
     // Sets the targetedPlayer object to the current player.  
     // Also ensures that the targetedPlayer's game controller is set for spotplayer to work properly.
-    private void setTargetedPlayer() {
-        targetedPlayer.SetNewPlayer(_players[_playerIndex]);
-        _players[_playerIndex].setGameController(this);
+    private void setTargetedPlayer(PlayerBehavior newPlayer) {
+        targetedPlayer.SetNewPlayer(newPlayer);
+        newPlayer.setGameController(this);
     }
 
     // Spawns cats in a random location catRadius units away from the initial targeted player

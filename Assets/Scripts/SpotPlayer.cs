@@ -12,7 +12,6 @@ public class SpotPlayer : MonoBehaviour
 
     private PlayerBehavior _spottedPlayer;
     private Camera _camera;
-    private int index {get; set;}
     // Start is called before the first frame update
     void Start()
     {
