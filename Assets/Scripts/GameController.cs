@@ -33,14 +33,19 @@ public class GameController : MonoBehaviour
         setTargetedPlayer();
         updatePlayerPosition();
         spawnCats(numCats);
-
     }
 
     public void setPlayerView(int newPlayerIndex) {
         PlayerBehavior newPlayer = _players[newPlayerIndex];
         newPlayer.deselect();
-        //newPlayer.setGameController(this);
         _playerIndex = newPlayerIndex;
+        setTargetedPlayer();
+        updatePlayerPosition();
+    }
+
+    public void setPlayerView(PlayerBehavior newPlayer) {
+        newPlayer.deselect();
+        _playerIndex = newPlayer.getIndex();
         setTargetedPlayer();
         updatePlayerPosition();
     }
@@ -57,11 +62,11 @@ public class GameController : MonoBehaviour
             _players.Add(playerBehavior);
             currentAngle += playerDistance;
         }
-        //_players[_playerIndex].setGameController(this);
     }
     
     private void setTargetedPlayer() {
         targetedPlayer.SetNewPlayer(_players[_playerIndex]);
+        _players[_playerIndex].setGameController(this);
     }
 
     private void spawnCats(int numberOfCats) {
@@ -101,6 +106,11 @@ public class GameController : MonoBehaviour
             Gizmos.color = Color.white;
             Gizmos.DrawWireSphere(_playerPosition, catRadius);
         }
+    }
+
+    private Vector normalizedDirection(Transform start, Transform end) {
+        float height = start.y;
+        return (new Vector3(end.x, height, end.z) - start).normalized;
     }
 
 }

@@ -33,7 +33,7 @@ public class SpotPlayer : MonoBehaviour
         }
 
         if(Input.GetButtonDown("Jump")) {
-            gameController.setPlayerView(_spottedPlayer.getIndex());
+            gameController.setPlayerView(_spottedPlayer);
             _spottedPlayer = null;
         }
     }
