@@ -18,7 +18,6 @@ public class TargetedPlayer : ScriptableObject, ISerializationCallbackReceiver
     }
 
     public void SetCamera(CameraHelper other) {
-        Debug.Log("Setting camera: " + other.camera + " " +  other.child);
         if(cameraHelper != null) {
             cameraHelper.child.SetActive(false);
         }

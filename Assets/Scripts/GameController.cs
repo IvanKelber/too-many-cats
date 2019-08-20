@@ -70,8 +70,6 @@ public class GameController : MonoBehaviour
         }
     }
 
-
-
     private void OnDrawGizmos() {
         if(isTesting) {
             Gizmos.color = Color.red;

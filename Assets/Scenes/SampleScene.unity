@@ -370,11 +370,11 @@ MonoBehaviour:
   playerPrefab: {fileID: 4907151767466763050, guid: 4bdbfc35aecd94aa4abd1c8d4e6ac6df,
     type: 3}
   playerRadius: 21.5
-  numPlayers: 2
+  numPlayers: 4
   catPrefab: {fileID: 6655729268937479937, guid: 8e8e5b0289b65470e92537517ab07f6a,
     type: 3}
-  catRadius: 14.5
-  numCats: 4
+  catRadius: 39.8
+  numCats: 5
 --- !u!4 &1386642879
 Transform:
   m_ObjectHideFlags: 0

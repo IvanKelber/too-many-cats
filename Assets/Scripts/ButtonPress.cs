@@ -9,9 +9,12 @@ public class ButtonPress : MonoBehaviour
     [Range(1,100)]
     public int raycastResolution = 1;
     public float raycastHeight = 3;
+    public AudioClip soundFX;
+    private AudioSource _audioSource;
 
     private int _oldRaycastResolution;
     private bool _pressed = false;
+    private bool _soundPlayed = false;
     private Collider _collider;
     private Vector3[] _corners;
     private List<Vector3> _raycasts = new List<Vector3>();
@@ -19,6 +22,8 @@ public class ButtonPress : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        _audioSource = GetComponent<AudioSource>();
+        _audioSource.clip = soundFX;
         _collider = GetComponent<Collider>();
         _corners = new Vector3[4];
         _oldRaycastResolution = raycastResolution;
@@ -38,11 +43,16 @@ public class ButtonPress : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        _pressed = checkForCollisions();
-
-        if(_pressed) {
-            print("Button is currently depressed");
+        bool newlyPressed = checkForCollisions();
+        if(newlyPressed != _pressed) {
+            if(newlyPressed) {
+                onCollisionEnter();
+            } else {
+                onCollisionExit();
+            }
         }
+
+        // For updating the raycast resolution during gameplay.
         if(raycastResolution != _oldRaycastResolution) {
             _oldRaycastResolution = raycastResolution;
             _raycasts.Clear();
@@ -74,6 +84,24 @@ public class ButtonPress : MonoBehaviour
                 _raycasts.Add(stepCast);
             }
         }
+    }
+
+    private void onCollisionEnter() {
+        print("On collision enter");
+        _pressed = true;
+        StartCoroutine(PlaySound());
+    }
+
+    private void onCollisionExit() {
+        print("On collision exit");
+        _pressed = false;
+    }
+
+    IEnumerator PlaySound() {
+        print(_audioSource.clip.length);
+        _soundPlayed = true;
+        _audioSource.Play();
+        yield return new WaitForSeconds(_audioSource.clip.length);
     }
 
     private void OnDrawGizmos() {

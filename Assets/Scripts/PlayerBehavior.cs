@@ -12,13 +12,11 @@ public class PlayerBehavior : MonoBehaviour
     private Material _defaultMaterial;
 
     void Awake() {
-        Debug.Log(targetedPlayer);
         if(targetedPlayer == null) {
             targetedPlayer = ScriptableObject.CreateInstance<TargetedPlayer>();
         }
         if(targetedPlayer.isNull()) {
             targetedPlayer.SetNewPlayer(this);
-            Debug.Log(targetedPlayer.GetPosition() == this.transform.position);
         }
     }
 
@@ -44,7 +42,6 @@ public class PlayerBehavior : MonoBehaviour
                 return new CameraHelper(cam, child.gameObject);
             }
         }
-        Debug.Log("get camera returns null.");
         return null;
     }
 
