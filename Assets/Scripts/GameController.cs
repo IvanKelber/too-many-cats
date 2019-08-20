@@ -35,12 +35,6 @@ public class GameController : MonoBehaviour
         }
     }
 
-    // Logic for selecting a new player.
-    public void setPlayerView(PlayerBehavior newPlayer) {
-        newPlayer.deselect();
-        setTargetedPlayer(newPlayer);
-    }
-
     // Spawns a group of static players that are playerRadius away from the center.
     private void spawnPlayers(int numberOfPlayers) {
         float playerDistance = 360.0f/numberOfPlayers;
@@ -59,7 +53,6 @@ public class GameController : MonoBehaviour
     // Also ensures that the targetedPlayer's game controller is set for spotplayer to work properly.
     private void setTargetedPlayer(PlayerBehavior newPlayer) {
         targetedPlayer.SetNewPlayer(newPlayer);
-        newPlayer.setGameController(this);
     }
 
     // Spawns cats in a random location catRadius units away from the initial targeted player

@@ -12,6 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2760fee98e63e40edb8fab235a2a5151, type: 3}
   m_Name: TargetedPlayer
   m_EditorClassIdentifier: 
-  transform: {fileID: 0}
-  camera: {fileID: 0}
+  position: {x: -3.7334368, y: 2, z: -21.173367}
   playerBehavior: {fileID: 0}

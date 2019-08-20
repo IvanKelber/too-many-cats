@@ -7,6 +7,7 @@ public class PlayerBehavior : MonoBehaviour
 {
 
     public Material selectedMaterial;
+    public TargetedPlayer targetedPlayer;
     private Renderer _renderer;
     private Material _defaultMaterial;
     // Start is called before the first frame update
@@ -35,12 +36,8 @@ public class PlayerBehavior : MonoBehaviour
         return null;
     }
 
-    public void setGameController(GameController gameController) {
-        SpotPlayer spotPlayer = GetComponentInChildren<SpotPlayer>();
-        if(spotPlayer) {
-            spotPlayer.setGameController(gameController);
-        } else {
-            throw new System.NullReferenceException("SpotPlayer does not exist.  Is the main camera active?");
-        }
+    public void targetSelf() {
+        deselect();
+        targetedPlayer.SetNewPlayer(this);
     }
 }

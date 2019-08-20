@@ -8,7 +8,6 @@ public class SpotPlayer : MonoBehaviour
     public float distance = 1000;
     [Range(1, 10)]
     public float fieldOfViewScale = 1;
-    public GameController gameController;
 
     private PlayerBehavior _spottedPlayer;
     private Camera _camera;
@@ -16,7 +15,6 @@ public class SpotPlayer : MonoBehaviour
     void Start()
     {
         _camera = GetComponent<Camera>();
-        //print("FOW: " + _camera.fieldOfView);
     }
 
     // Update is called once per frame
@@ -26,19 +24,15 @@ public class SpotPlayer : MonoBehaviour
         if(_spottedPlayer != null) {
             _spottedPlayer.deselect();
         } 
-        _spottedPlayer = selected;
-        if(_spottedPlayer != null) {
-            _spottedPlayer.select();
+        if(selected != null) {
+            selected.select();
         }
+        _spottedPlayer = selected;
 
-        if(Input.GetButtonDown("Jump")) {
-            gameController.setPlayerView(_spottedPlayer);
+        if(Input.GetButtonDown("Jump") && _spottedPlayer != null) {
+            _spottedPlayer.targetSelf();
             _spottedPlayer = null;
         }
-    }
-
-    public void setGameController(GameController gameController) {
-        this.gameController = gameController;
     }
 
     PlayerBehavior selectPlayer() {
@@ -49,7 +43,6 @@ public class SpotPlayer : MonoBehaviour
                 if(other.transform.position != transform.position) {
                     Vector3 dirToOther = (other.transform.position - transform.position).normalized;
                     float angle = Vector3.Angle(dirToOther, transform.forward);
-                    //print("Angle: " + angle);
                     if(angle < _camera.fieldOfView/(2*fieldOfViewScale) && angle < closestAngle) {
                         closestAngle = angle;
                         closestPlayer = other;

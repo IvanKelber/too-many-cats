@@ -139,6 +139,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   selectedMaterial: {fileID: 2100000, guid: 652dcb2a93d81e745bc91153b3c2eda9, type: 2}
+  targetedPlayer: {fileID: 11400000, guid: 044e6b6b69ab64faa9dc2c563c3f2b35, type: 2}
 --- !u!1 &4907151767642910911
 GameObject:
   m_ObjectHideFlags: 0
@@ -257,4 +258,3 @@ MonoBehaviour:
     m_Bits: 256
   distance: 1000
   fieldOfViewScale: 1
-  gameController: {fileID: 0}
