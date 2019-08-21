@@ -18,11 +18,16 @@ public class ButtonPress : MonoBehaviour
     private Collider _collider;
     private Vector3[] _corners;
     private List<Vector3> _raycasts = new List<Vector3>();
+    private Vector3 _defaultPosition;
+    private Vector3 _pressedPosition;
 
     // Start is called before the first frame update
     void Start()
     {
-        print("Starting");
+        _defaultPosition = transform.localScale;
+        _pressedPosition = new Vector3(_defaultPosition.x, _defaultPosition.y/2, _defaultPosition.z);
+        print(_defaultPosition);
+        print(_pressedPosition);
         _audioSource = GetComponent<AudioSource>();
         _audioSource.clip = soundFX;
         _collider = GetComponent<Collider>();
@@ -72,6 +77,7 @@ public class ButtonPress : MonoBehaviour
     }
 
     private void interpolateRaycasts() {
+        // Raycasts on edges:
         for(int i = 0; i < _corners.Length; i++) {
             Vector3 cornerFrom = _corners[i];
             Vector3 cornerTo = _corners[(i+1) % _corners.Length];
@@ -85,22 +91,68 @@ public class ButtonPress : MonoBehaviour
                 _raycasts.Add(stepCast);
             }
         }
+        // Raycasts on diagonals
+        for(int i = 0; i < _corners.Length; i++) {
+            Vector3 cornerFrom = _corners[i];
+            Vector3 cornerTo = _corners[(i+2) % _corners.Length];
+
+            float distance = Vector3.Distance(cornerFrom, cornerTo);
+            float step = distance / raycastResolution;
+
+            Vector3 direction = (cornerTo - cornerFrom).normalized;
+            for(int j = 0; j < raycastResolution; j++) {
+                Vector3 stepCast = cornerFrom + direction * step * j;
+                _raycasts.Add(stepCast);
+            }
+        }
+
+    }
+
+    IEnumerator AnimateButtonDown() {
+        float percentage = (transform.localScale.y - _defaultPosition.y)/(_pressedPosition.y - _defaultPosition.y);
+        print("Percentage: " + percentage);
+        transform.localScale = Vector3.Lerp(_pressedPosition, _defaultPosition, percentage);
+        yield return null;
+    }
+
+     IEnumerator AnimateButtonUp() {
+        float percentage = (transform.localScale.y - _pressedPosition.y)/(_defaultPosition.y - _pressedPosition.y);
+        print("Percentage: " + percentage);
+        transform.localScale = Vector3.Lerp(_defaultPosition, _pressedPosition, percentage);
+        yield return null;
+    }
+
+    private void animateButtonDown() {
+        transform.localScale = Vector3.Lerp(_defaultPosition, _pressedPosition, Time.deltaTime);
+    }
+
+    
+    private void animateButtonUp() {
+        transform.localScale = Vector3.Lerp(_pressedPosition, _defaultPosition, Time.deltaTime);
     }
 
     private void onCollisionEnter() {
         print("On collision enter");
         _pressed = true;
-        if(_soundPlaying == false) {
+        if(!_soundPlaying) {
             StartCoroutine(PlaySound());
+            StartCoroutine(AnimateButtonDown());
+            // animateButtonDown();
+            print(transform.localScale);
         }
     }
 
     private void onCollisionExit() {
         print("On collision exit");
         _pressed = false;
+        StartCoroutine(AnimateButtonUp());
+
+        // animateButtonUp();
+        print(transform.localScale);
     }
 
     IEnumerator PlaySound() {
+        print("playing sound");
         _soundPlaying = true;
         _audioSource.Play();
         yield return new WaitForSeconds(_audioSource.clip.length);
