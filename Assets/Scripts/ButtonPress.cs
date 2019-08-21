@@ -109,39 +109,21 @@ public class ButtonPress : MonoBehaviour
     }
 
     IEnumerator AnimateButtonDown() {
-
         float percentage = (transform.localScale.y - _defaultPosition.y)/(_pressedPosition.y - _defaultPosition.y) + Time.deltaTime;
-        print("Percentage upon press: " + percentage);
         int count = 0;
-        while(percentage < .9f && count < 1000) {
-            count++;
+        while(percentage < .9f) {
             transform.localScale = Vector3.Lerp(_defaultPosition, _pressedPosition, percentage);
             percentage = (transform.localScale.y - _defaultPosition.y)/(_pressedPosition.y - _defaultPosition.y) + Time.deltaTime;
-            print(percentage);
-            if(percentage == 0) {
-                print("breaking");
-                break;
-            }
             yield return null;
         }
     }
 
      IEnumerator AnimateButtonUp() {
+        //Might not be any point to lerping this...
         float percentage = (transform.localScale.y - _pressedPosition.y)/(_defaultPosition.y - _pressedPosition.y);
-        print("Percentage upon release: " + percentage);
         Vector3 result = Vector3.Lerp(_defaultPosition, _pressedPosition, percentage);
         transform.localScale = result;
-        print(result);
         yield return null;
-    }
-
-    private void animateButtonDown() {
-        transform.localScale = Vector3.Lerp(_defaultPosition, _pressedPosition, Time.deltaTime);
-    }
-
-    
-    private void animateButtonUp() {
-        transform.localScale = Vector3.Lerp(_pressedPosition, _defaultPosition, Time.deltaTime);
     }
 
     private void onCollisionEnter() {
@@ -151,8 +133,6 @@ public class ButtonPress : MonoBehaviour
             StartCoroutine(PlaySound());
             StopCoroutine("AnimateButtonUp");
             StartCoroutine("AnimateButtonDown");
-            // animateButtonDown();
-            print(transform.localScale);
         }
     }
 
@@ -161,13 +141,9 @@ public class ButtonPress : MonoBehaviour
         _pressed = false;
         StopCoroutine("AnimateButtonDown");
         StartCoroutine("AnimateButtonUp");
-
-        // animateButtonUp();
-        print(transform.localScale);
     }
 
     IEnumerator PlaySound() {
-        print("playing sound");
         _soundPlaying = true;
         _audioSource.Play();
         yield return new WaitForSeconds(_audioSource.clip.length);
