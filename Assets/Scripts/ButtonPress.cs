@@ -109,16 +109,29 @@ public class ButtonPress : MonoBehaviour
     }
 
     IEnumerator AnimateButtonDown() {
-        float percentage = (transform.localScale.y - _defaultPosition.y)/(_pressedPosition.y - _defaultPosition.y);
-        print("Percentage: " + percentage);
-        transform.localScale = Vector3.Lerp(_pressedPosition, _defaultPosition, percentage);
-        yield return null;
+
+        float percentage = (transform.localScale.y - _defaultPosition.y)/(_pressedPosition.y - _defaultPosition.y) + Time.deltaTime;
+        print("Percentage upon press: " + percentage);
+        int count = 0;
+        while(percentage < .9f && count < 1000) {
+            count++;
+            transform.localScale = Vector3.Lerp(_defaultPosition, _pressedPosition, percentage);
+            percentage = (transform.localScale.y - _defaultPosition.y)/(_pressedPosition.y - _defaultPosition.y) + Time.deltaTime;
+            print(percentage);
+            if(percentage == 0) {
+                print("breaking");
+                break;
+            }
+            yield return null;
+        }
     }
 
      IEnumerator AnimateButtonUp() {
         float percentage = (transform.localScale.y - _pressedPosition.y)/(_defaultPosition.y - _pressedPosition.y);
-        print("Percentage: " + percentage);
-        transform.localScale = Vector3.Lerp(_defaultPosition, _pressedPosition, percentage);
+        print("Percentage upon release: " + percentage);
+        Vector3 result = Vector3.Lerp(_defaultPosition, _pressedPosition, percentage);
+        transform.localScale = result;
+        print(result);
         yield return null;
     }
 
@@ -136,7 +149,8 @@ public class ButtonPress : MonoBehaviour
         _pressed = true;
         if(!_soundPlaying) {
             StartCoroutine(PlaySound());
-            StartCoroutine(AnimateButtonDown());
+            StopCoroutine("AnimateButtonUp");
+            StartCoroutine("AnimateButtonDown");
             // animateButtonDown();
             print(transform.localScale);
         }
@@ -145,7 +159,8 @@ public class ButtonPress : MonoBehaviour
     private void onCollisionExit() {
         print("On collision exit");
         _pressed = false;
-        StartCoroutine(AnimateButtonUp());
+        StopCoroutine("AnimateButtonDown");
+        StartCoroutine("AnimateButtonUp");
 
         // animateButtonUp();
         print(transform.localScale);
