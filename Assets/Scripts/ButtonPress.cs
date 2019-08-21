@@ -14,7 +14,7 @@ public class ButtonPress : MonoBehaviour
 
     private int _oldRaycastResolution;
     private bool _pressed = false;
-    private bool _soundPlayed = false;
+    private bool _soundPlaying = false;
     private Collider _collider;
     private Vector3[] _corners;
     private List<Vector3> _raycasts = new List<Vector3>();
@@ -22,6 +22,7 @@ public class ButtonPress : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        print("Starting");
         _audioSource = GetComponent<AudioSource>();
         _audioSource.clip = soundFX;
         _collider = GetComponent<Collider>();
@@ -89,7 +90,9 @@ public class ButtonPress : MonoBehaviour
     private void onCollisionEnter() {
         print("On collision enter");
         _pressed = true;
-        StartCoroutine(PlaySound());
+        if(_soundPlaying == false) {
+            StartCoroutine(PlaySound());
+        }
     }
 
     private void onCollisionExit() {
@@ -98,10 +101,10 @@ public class ButtonPress : MonoBehaviour
     }
 
     IEnumerator PlaySound() {
-        print(_audioSource.clip.length);
-        _soundPlayed = true;
+        _soundPlaying = true;
         _audioSource.Play();
         yield return new WaitForSeconds(_audioSource.clip.length);
+        _soundPlaying = false;
     }
 
     private void OnDrawGizmos() {
